@@ -11,15 +11,24 @@
 #include "ranklist.h"
 #include "index.h"
 
+#define MAXKWSIZE 2014
+
 int main( int argc, char** argv ) {
-    if( argc < 2 )
-        return 0;
+    char keyword[MAXKWSIZE];
+    if( argc < 2 ) {
+        FILE *file =fopen( "queryterms.txt", "r" );
+        if( file == NULL ) return -1;
+        fscanf( file, "%s", keyword );
+        fclose( file );
+    }
+    else
+        strncpy( keyword, argv[1], MAXKWSIZE );
 
     ranklist_t r;
     ranklist_create( &r );
 
     for( int idx =0; idx < 4; idx++ ) {
-        FILE* file =index_open( (index_t)idx, argv[1], IDX_OPEN_READ );
+        FILE* file =index_open( (index_t)idx, keyword, IDX_OPEN_READ );
         if( file == NULL ) continue;
 
         docid_t docid;

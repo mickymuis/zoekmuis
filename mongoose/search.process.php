@@ -1,7 +1,7 @@
 #!/usr/bin/php-cgi
 <html><body><center><p><br><p><br><font face=arial>
 
-<font size=7 color=darkblue>LIACS Search</font>
+<font size=7 color=darkblue>ZoekMuis</font>
 <p>
 <form enctype="multipart/form-data" action="./search.process.php" method="post">
 <input name="myquery" size="60">
@@ -15,11 +15,11 @@ echo '<hr><p><font size=6 color=darkblue>Results</font><p>';
 $myquery = $_POST['myquery']; 
 
 // Write the query terms to a local file to minimize security problems
-$handle  = fopen("queryterms.txt","w");
+$handle  = fopen("../zoekmuis/queryterms.txt","w");
 fwrite($handle,$myquery);
 fclose($handle);
 
-$commandstring = './myprog ';
+$commandstring = '(cd ../zoekmuis && ./webquery)';
 
 //Using backticks one way for PHP to call an external program and return the output
 $myoutput =`$commandstring`;
