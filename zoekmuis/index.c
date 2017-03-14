@@ -138,6 +138,22 @@ index_open( index_t idx, const char* keyword, idx_openmode_t mode  ) {
 }
 
 int
+index_remove( index_t idx, const char* keyword ) {
+    if( keyword == NULL || strlen( keyword ) == 0 )
+        return 0;
+
+    size_t path_len =strlen( keyword ) + strlen( IDX_PATH[idx] ) + 1;
+    char *path =malloc( sizeof(char) * path_len );
+    strcpy( path, IDX_PATH[idx] );
+    strcat( path, keyword );
+    
+    int err =remove( path );
+    
+    free( path );
+    return err;
+}
+
+int
 index_append( index_t idx, const char* keyword, const docid_t* ids, size_t len ) {
 
     FILE* file =index_open( idx, keyword, IDX_OPEN_WRITE );

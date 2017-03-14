@@ -28,7 +28,7 @@ div.container-background {
 }
 
 div.container {
-    max-width: 940px;
+    max-width: 960px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -53,11 +53,17 @@ h1#title {
     font-size: 150%;
 }
 
+.result-list h2 {
+    color: teal;
+    text-align: center;
+}
+
 .result-list {
     margin-top: 75px;
     margin-bottom: 20px;
     background-color: white;
     background-color: rgba( 255, 255, 255, 128 );
+    min-height: 300px;
 }
 
 .img-result {
@@ -72,3 +78,12 @@ h1#title {
     max-height: 150px;
 }
 
+.img-query {
+    text-align: center;
+    isplay: block;
+}
+
+.img-query img {
+    width: 250px;
+    height: auto;
+}

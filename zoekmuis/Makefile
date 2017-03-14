@@ -5,6 +5,7 @@ webspider: webspider_main.c webspider.c queue.c docid.c index.c ranklist.c htmls
 
 webquery: webquery_main.c docid.c index.c ranklist.c hash.c avl.c
 	gcc -std=c99 -g webquery_main.c docid.c index.c ranklist.c hash.c avl.c -o webquery
+	(cd ../imgcompare/Debug && make)
 
 clean:
 	rm -f webspider webquery
@@ -15,3 +16,4 @@ clean:
 	rm -f imageindex/*
 	rm -f repository/*
 	rm -f images/*
+	(cd ../imgcompare/Debug && make clean)

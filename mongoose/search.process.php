@@ -9,10 +9,18 @@ require( 'header.php' );
 
 <?php
 // $myquery contains the query from the search engine
-$myquery = $_POST['myquery']; 
+$myquery ="none";
+if( !empty( $_GET['q'] ) )
+    $myquery =$_GET['q'];
+else if( !empty( $_POST['q'] ) )
+    $myquery =$_POST['q'];
 
 // $type contains either 'web' or 'images'
-$type =$_POST['type'];
+$type ='web';
+if( !empty( $_POST['type'] ) )
+    $type =$_POST['type'];
+if( isset( $_GET['color'] ) )
+        $type ="color";
 
 // Write the query terms to a local file to minimize security problems
 $handle  = fopen("../zoekmuis/queryterms.txt","w");

@@ -12,9 +12,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAXQSIZE 9000000       // Maximum size of the queue, q
+#define MAXQSIZE 10485760       // Maximum size of the queue, q (this is 10Mb)
 #define MAXURL 100000          // Maximum size of a URL
-#define MAXDOWNLOADS 300      // Maximum number of downloads we will attempt
+#define MAXDOWNLOADS 2000      // Maximum number of downloads we will attempt
 
 void 
 show_help( const char *name ) {
@@ -23,10 +23,13 @@ show_help( const char *name ) {
 
 int
 isValidDomain( const char* url ) {
-    /*  if((strstr(url,"leidenuniv.nl") != NULL) || (strstr(url,"liacs.nl") != NULL))
+#ifdef RESTRICT_DOMAIN
+      if((strstr(url,"leidenuniv.nl") != NULL) || (strstr(url,"liacs.nl") != NULL))
         return 1;
-      return 0;*/
+      return 0;
+#else
     return 1;
+#endif
 }
 
 int main( int argc, char** argv ) {
@@ -45,10 +48,6 @@ int main( int argc, char** argv ) {
     docid_sanitizeUrl( urlspace, MAXURL );
     docid =docid_make( urlspace, strlen( urlspace ) );
 
-    // Open mylinks.txt
-    FILE *fp;
-    fp = fopen( "mylinks.txt", "w" );
-   
     // Pre-alloc the queue and set the separator char
     queue_t q;
     queue_create( &q, MAXQSIZE, '\n' );
@@ -100,26 +99,8 @@ int main( int argc, char** argv ) {
             return -1;
         }
 
-        // Write this link to the mylinks.txt
-        fprintf( fp, "%s\n", abs_url );
-
-        /* fprintf( stdout, "%s", links );
-    
-        if( !get_image_links_from_webpage( &imgs, htmlpage, length, abs_url ) ) {
-            return -1; // Error
-        }
-
-        fprintf( stdout, "%s", imgs );*/
-        
         free( htmlpage );
         free( abs_url );
-    }
-
-    // Write the remainder of the queue to mylinks.txt
-    while( q.count ) {
-        queue_getCurrent( &q, urlspace, MAXURL );
-        fprintf( fp, "%s\n", urlspace );
-        queue_pop( &q );
     }
 
     queue_free( &q );

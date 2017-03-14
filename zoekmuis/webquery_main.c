@@ -16,27 +16,15 @@
 #define MAX_TITLESIZE 80
 #define MAX_URLSIZE 1024
 #define MAX_PREVIEWSIZE 512
+#define DOCID_STRLEN 16
 
-int main( int argc, char** argv ) {
-    char keyword[MAX_KWSIZE];
-    FILE *file =fopen( "queryterms.txt", "r" );
-    if( file == NULL ) return -1;
-    fscanf( file, "%2048s", keyword );
-    fclose( file );
+#define IMGCOMPARE_PATH "../imgcompare/imgcompare"
+#define IMGCOMPARE_LIMIT 25
 
-    enum { MODE_WEB, MODE_IMAGES, MODE_COLOR } mode;
-    mode =MODE_WEB;
+typedef enum { MODE_WEB, MODE_IMAGES, MODE_COLOR } mode_t;
 
-    if( argc > 1 ) {
-        if( strcmp( argv[1], "--images" ) == 0 ) 
-            mode =MODE_IMAGES;
-        else if( strcmp( argv[1], "--color" ) == 0 ) 
-            mode =MODE_COLOR;
-    }
-
-    ranklist_t r;
-    ranklist_create( &r );
-
+void
+make_ranklist( ranklist_t *r, const char* keyword, mode_t mode ) {
     index_t from_idx =IDX_WEBIDX, to_idx =IDX_TITLEIDX;
     if( mode == MODE_IMAGES ) {
         from_idx =IDX_IMAGEIDX;
@@ -52,21 +40,90 @@ int main( int argc, char** argv ) {
         while( !feof( file ) ) {
             if( fread( &docid, sizeof( docid_t ), 1, file ) != 1 )
                 break;
-            ranklist_push( &r, docid, (index_t)idx );
+            ranklist_push( r, docid, (index_t)idx );
         }
     }
 
-    ranklist_sort( &r );
+    ranklist_sort( r );
+}
 
+FILE*
+make_imgcompare( const char* source ) {
+    char cmd[1024];
+    sprintf( cmd, "%s images/%s images/ imgcompare.txt", IMGCOMPARE_PATH, source );
+    if( system( cmd ) != 0 )
+        return NULL;
+    return fopen( "imgcompare.txt", "r" );
+}
+
+int main( int argc, char** argv ) {
+    char keyword[MAX_KWSIZE];
+    FILE *file =fopen( "queryterms.txt", "r" );
+    if( file == NULL ) return -1;
+    fscanf( file, "%2048s", keyword );
+    fclose( file );
+
+    mode_t mode =MODE_WEB;
+
+    if( argc > 1 ) {
+        if( strcmp( argv[1], "--images" ) == 0 ) 
+            mode =MODE_IMAGES;
+        else if( strcmp( argv[1], "--color" ) == 0 ) 
+            mode =MODE_COLOR;
+    }
+
+    FILE* imgcompare_out;
+    ranklist_t r;
+    ranklist_create( &r );
+    
     char title[MAX_TITLESIZE];
     char url[MAX_URLSIZE];
     char preview[MAX_PREVIEWSIZE];
-//    int image_cell =0;
 
-    for( int i =0; i < r.count; i++ ) {
-        //printf( "%#Lx ranking #%d\n", r.first[i].docid, r.first[i].rank );
-        docid_t docid =r.first[i].docid;
-        char* docid_str =docid_tostr( docid );
+    switch( mode ) {
+        case MODE_WEB:
+        case MODE_IMAGES:
+            make_ranklist( &r, keyword, mode );
+
+            printf( "<h2>Results for `%s'</h2>", keyword );
+            break;
+        case MODE_COLOR:
+            imgcompare_out =make_imgcompare( keyword );
+            if( imgcompare_out == NULL ) {
+                fprintf( stderr, "imgcompare returned with errors\n" );
+                return -1;
+            }
+            FILE* file =index_open( IDX_REPOSITORY, keyword, IDX_OPEN_READ );
+            if( file == NULL ) break;
+            if( fgets( url, MAX_URLSIZE-1, file ) == NULL ) break;
+            fclose( file);
+            
+            printf( "<h2>Images similar to:</h2>" );
+            printf( "<div class=\"img-query\">\n" );
+            printf( "\t<a href=\"%s\"><img src=\"%s\"/></a>\n", url, url );
+            printf( "</div>" );
+
+            break;
+    }
+
+    int i =0;
+
+    while( 1 ) {
+        char *docid_str =NULL;
+        if( mode == MODE_COLOR ) {
+            if( i == IMGCOMPARE_LIMIT ) break;
+            if( ferror( imgcompare_out) || feof( imgcompare_out ) ) break;
+        
+            docid_str =malloc( sizeof(char) * (DOCID_STRLEN+2) );
+            fgets( docid_str, DOCID_STRLEN+1, imgcompare_out );
+        } else {
+            if( i == r.count ) break;
+
+            docid_t docid =r.first[i].docid;
+            docid_str =docid_tostr( docid );
+        }
+        i++;
+
         FILE* file =index_open( IDX_REPOSITORY, docid_str, IDX_OPEN_READ );
         if( file == NULL ) continue;
         if( fgets( url, MAX_URLSIZE-1, file ) == NULL ) continue;
@@ -83,10 +140,11 @@ int main( int argc, char** argv ) {
             printf( "\t<cite>%s</cite>\n", url );
             printf( "\t<p>%s...</p>\n", preview );
             printf( "</div>\n" );
-        } else if( mode == MODE_IMAGES ) {
+        } else {
             printf( "<div class=\"img-result\">\n" );
             printf( "\t<a href=\"%s\"><img src=\"%s\"/></a>\n", url, url );
-            printf( "\t<a class=\"color-link\" href=\"?color&docid=%s\">find by color</a>", docid_str );
+            if( mode == MODE_IMAGES )
+                printf( "\t<a class=\"color-link\" href=\"?color&q=%s\">find by color</a>", docid_str );
             printf( "</div>" );
         }
 

@@ -124,13 +124,15 @@ download_image( docid_t docid, const char* url ) {
     if( curl_res ) {
             fprintf( stderr, "ERROR: while dowloading image: incorrect url or timeout.\n" ); 
             err = -1;
-    }
-    char* buf;
-    curl_res = curl_easy_getinfo( curl, CURLINFO_CONTENT_TYPE, &buf );
+    } else {
+        char* buf;
+        curl_res = curl_easy_getinfo( curl, CURLINFO_CONTENT_TYPE, &buf );
 
-    if( strncmp( buf, "image", 5 ) != 0 ) {
-        // Content-type doesn't match that of an image, probably 404 etc
-        err =-1;
+        if( !buf || strncmp( buf, "image", 5 ) != 0 ) {
+            // Content-type doesn't match that of an image, probably 404 etc
+            index_remove( IDX_IMAGES, docid_str );
+            err =-1;
+        }
     }
 
     // Cleanup
@@ -292,7 +294,7 @@ parse_webpage( docid_t base_docid, char* htmlpage, size_t length, const char* ab
                                 memcpy( img_alt, title, title_len);
                                 img_alt[title_len] =0;
                             }
-                            printf( "+++ Image: src `%s', alt `%s'\n", img_src, img_alt );
+                            //printf( "+++ Image: src `%s', alt `%s'\n", img_src, img_alt );
                             if( img_alt )
                                 index_appendHtmlInner( IDX_IMAGEIDX, docid, img_alt );
                             index_appendRepository( docid, img_src, strlen( img_src ), NULL, 0L, NULL, 0L );
@@ -317,7 +319,7 @@ parse_webpage( docid_t base_docid, char* htmlpage, size_t length, const char* ab
                             memcpy( title_tmp, title_trim, len+1 );
                             title =title_tmp;
                             title_len =len;
-                            fprintf( stderr, "--- Website Title: %s\n", title );
+                            //fprintf( stderr, "--- Website Title: %s\n", title );
                         }
 
 
@@ -338,7 +340,7 @@ parse_webpage( docid_t base_docid, char* htmlpage, size_t length, const char* ab
                         // If this is a <P>, add it to the body text for the repository 
                         if( html_parser_cmp_tag( hsp, TAG_ENDP, TAG_ENDP_LEN ) ) {
 
-                                                    fprintf( stderr, "--- Inner text portion: `%s'\n", text );
+                            //fprintf( stderr, "--- Inner text portion: `%s'\n", text );
                             text[text_len] =' '; // Add a space to the end
                             size_t offs =repotext.size;
                             dataptr_grow( &repotext, text_len+1 );

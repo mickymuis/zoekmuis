@@ -1,0 +1,16 @@
+Building instructions:
+---------------------
+
+Run:
+
+cd zoekmuis
+make
+
+Run the webspider by going into the same directory and type
+./webspider http://my.url.com/
+
+The webserver/interface can be lauched by:
+cd mongoose
+./mongoose
+
+Now visit http://localhost:8080

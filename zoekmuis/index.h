@@ -59,6 +59,10 @@ index_tokInner( char** buffer );
 FILE*
 index_open( index_t idx, const char* keyword, idx_openmode_t mode );
 
+/* Remove 'keyword' from 'idx' */
+int
+index_remove( index_t idx, const char* keyword );
+
 
 /* Add new DOCIDs to the index `idx' with keyword `keyword'
    `ids' is assumed to be an array of docid_t and its length is given by `len' */

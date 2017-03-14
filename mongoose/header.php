@@ -11,7 +11,7 @@
 
 <div style="text-align: center">
 <form enctype="multipart/form-data" action="./search.process.php" method="post">
-<input name="myquery" size="60"><br/>
+<input name="q" size="60"><br/><br/>
 <button type="submit" name="type" value="web">Search Web</button>
 <button type="submit" name="type" value="images">Search Images</button>
 </div>
