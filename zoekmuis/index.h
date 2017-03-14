@@ -20,7 +20,8 @@ typedef enum {
     IDX_PAGEIDX =2,
     IDX_TITLEIDX =3,
     IDX_IMAGEIDX =4,
-    IDX_REPOSITORY =5
+    IDX_REPOSITORY =5,
+    IDX_IMAGES =6
 } index_t;
 
 typedef enum {
@@ -34,7 +35,8 @@ static const char* IDX_PATH[] = {
     "pageindex/",
     "titleindex/",
     "imageindex/",
-    "repository/" };
+    "repository/",
+    "images/" };
 
 /* Split `link' into its constituent words
    `buffer' will point to an array of null-terminated char*'s
@@ -77,6 +79,10 @@ index_appendWebidx( docid_t docid, const char* url, size_t len );
 
 /* Create a repository file for `docid' containing `data' */
 int
-index_appendRepository( docid_t docid, const char* url, size_t url_len, const char* data, size_t len );
+index_appendRepository( docid_t docid, 
+        const char* url, size_t url_len, 
+        const char* title, size_t title_len, 
+        const char* data, size_t len );
+
 
 #endif

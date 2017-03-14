@@ -23,9 +23,10 @@ show_help( const char *name ) {
 
 int
 isValidDomain( const char* url ) {
-      if((strstr(url,"leidenuniv.nl") != NULL) || (strstr(url,"liacs.nl") != NULL))
+    /*  if((strstr(url,"leidenuniv.nl") != NULL) || (strstr(url,"liacs.nl") != NULL))
         return 1;
-      return 0;
+      return 0;*/
+    return 1;
 }
 
 int main( int argc, char** argv ) {
@@ -60,7 +61,7 @@ int main( int argc, char** argv ) {
         
     for( int k=0; k < MAXDOWNLOADS; k++ )
     {
-        printf("\nDownload #: %d   Weblinks: %d   Queue Size: %d\n", k+1, q.count, queue_bytesInUse( &q ) );
+        printf("\nDownload #: %d   Weblinks: %zu   Queue Size: %zu\n", k+1, q.count, queue_bytesInUse( &q ) );
 
         // Get the next url from the front of the queue
         if( queue_getCurrent( &q, urlspace, MAXURL ) == 0 ) {
@@ -85,13 +86,9 @@ int main( int argc, char** argv ) {
 
         size_t abs_url_len =docid_sanitizeUrl( abs_url, MAXURL );
         docid =docid_make( abs_url, abs_url_len );
-        fprintf( stderr, "Got %u bytes from '%s' (DOCID 0x%x)\n", length, abs_url, docid );
+        fprintf( stderr, "Got %zu bytes from '%s' (DOCID 0x%Lx)\n", length, abs_url, (long long unsigned int)docid );
 
                 
-        if( ( err =index_appendRepository( docid, abs_url, abs_url_len, htmlpage, length ) ) != 0 ) {
-            fprintf( stderr, "ERROR: index_appendRepository() returned %d\n", err );
-            return -1;
-        }
         
         if( ( err =index_appendWebidx( docid, abs_url, abs_url_len ) ) != 0 ) {
             fprintf( stderr, "ERROR: index_appendWebidx() returned %d\n", err );

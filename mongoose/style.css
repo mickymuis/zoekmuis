@@ -1,0 +1,74 @@
+body, html, div {
+    margin: 0;
+    padding: 0;
+}
+
+a img, a, img {
+    border: 0;
+}
+
+a, a:visited {
+    color: teal;
+}
+
+a.color-link {
+    font-size: 75%;
+    display: block;
+}
+
+body, html {
+    font-family: 'Roboto', sans-serif;
+
+}
+
+div.container-background {
+    background-image: url('muis.jpg');
+    background-repeat: no-repeat;
+    background-position: top left;
+}
+
+div.container {
+    max-width: 940px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div.header {
+    padding-top: 25px;
+    padding-bottom: 25px;
+    background-color: whitesmoke;
+    border-bottom: 1px solid lightgray;
+}
+
+h1#title {
+    text-align: center;
+    color: teal;
+}
+
+.result p {
+    color: gray;
+}
+
+.result h3 {
+    font-size: 150%;
+}
+
+.result-list {
+    margin-top: 75px;
+    margin-bottom: 20px;
+    background-color: white;
+    background-color: rgba( 255, 255, 255, 128 );
+}
+
+.img-result {
+    display: inline-block;
+    padding: 5px;
+    width: 180px;
+}
+
+.img-result img {
+    width: 170px;
+    height: auto;
+    max-height: 150px;
+}
+

@@ -129,7 +129,7 @@ index_open( index_t idx, const char* keyword, idx_openmode_t mode  ) {
     FILE *file;
     if( mode == IDX_OPEN_READ )
         file =fopen( path, "rb" );
-    else if( idx ==IDX_REPOSITORY )
+    else if( idx ==IDX_REPOSITORY /*|| idx == IDX_IMAGES*/ )
         file =fopen( path, "wb" );
     else
         file =fopen( path, "ab" );
@@ -197,7 +197,10 @@ index_appendWebidx( docid_t docid, const char* url, size_t len ) {
 }
 
 int
-index_appendRepository( docid_t docid, const char* url, size_t url_len, const char* data, size_t len ) {
+index_appendRepository( docid_t docid, 
+        const char* url, size_t url_len, 
+        const char* title, size_t title_len, 
+        const char* data, size_t len ) {
     
     char *docid_str =docid_tostr( docid );
 
@@ -205,15 +208,27 @@ index_appendRepository( docid_t docid, const char* url, size_t url_len, const ch
     if( file == NULL ) goto err;
 
     // Write the URL and a newline first, this provides a simple means of reversing DOCIDs
-    if( fwrite( (void*)url, sizeof( char ), url_len, file ) != url_len )
-        goto err;
+    if( url != NULL ) {
+        if( fwrite( (void*)url, sizeof( char ), url_len, file ) != url_len )
+            goto err;
     
-    if( fwrite( (void*)"\n", sizeof( char ), 1, file ) != 1 )
-        goto err;
+        if( fwrite( (void*)"\n", sizeof( char ), 1, file ) != 1 )
+            goto err;
+    }
+
+    // Also write the title
+    if( title != NULL ) {
+        if( fwrite( (void*)title, sizeof( char ), title_len, file ) != title_len )
+            goto err;
+    
+        if( fwrite( (void*)"\n", sizeof( char ), 1, file ) != 1 )
+            goto err;
+    }
 
     // Now write the body of the page
-    if( fwrite( (void*)data, sizeof( char ), len, file ) != len )
-        goto err;
+    if( data != NULL )
+        if( fwrite( (void*)data, sizeof( char ), len, file ) != len )
+            goto err;
 
     free( docid_str );
     fclose( file );

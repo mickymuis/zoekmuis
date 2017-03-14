@@ -221,12 +221,12 @@ void avl_display(avl_node_t* t)
 {
     if (t == NULL)
         return;
-    printf("%d",t->data);
+    printf("%Lx",(long long unsigned int)t->data);
  
     if(t->left != NULL)
-        printf("(L:%d)",t->left->data);
+        printf("(L:%Lx)",(long long unsigned int)t->left->data);
     if(t->right != NULL)
-        printf("(R:%d)",t->right->data);
+        printf("(R:%Lx)",(long long unsigned int)t->right->data);
     printf("\n");
  
     avl_display(t->left);

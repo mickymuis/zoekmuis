@@ -12,4 +12,6 @@ clean:
 	rm -f webindex/*
 	rm -f linkindex/*
 	rm -f pageindex/*
+	rm -f imageindex/*
 	rm -f repository/*
+	rm -f images/*

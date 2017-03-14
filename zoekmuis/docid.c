@@ -24,7 +24,7 @@ char*
 docid_tostr( docid_t id ) {
     // A DOCID is 16 bytes long, but we add a null
     char* str =malloc( sizeof(char) * 17 );
-    snprintf( str, 17, "%Lx", id );
+    snprintf( str, 17, "%Lx", (long long unsigned int)id );
     return str;
 }
 

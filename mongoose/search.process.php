@@ -1,31 +1,31 @@
 #!/usr/bin/php-cgi
-<html><body><center><p><br><p><br><font face=arial>
-
-<font size=7 color=darkblue>ZoekMuis</font>
-<p>
-<form enctype="multipart/form-data" action="./search.process.php" method="post">
-<input name="myquery" size="60">
-<input name="Search" value="search" type="submit"> </form>
-<p><br><p></center>
 <?php
+require( 'header.php' );
+?>
 
-echo '<hr><p><font size=6 color=darkblue>Results</font><p>';
+<div class="container-background">
+<div class="container">
+<div class="result-list">
 
+<?php
 // $myquery contains the query from the search engine
 $myquery = $_POST['myquery']; 
+
+// $type contains either 'web' or 'images'
+$type =$_POST['type'];
 
 // Write the query terms to a local file to minimize security problems
 $handle  = fopen("../zoekmuis/queryterms.txt","w");
 fwrite($handle,$myquery);
 fclose($handle);
 
-$commandstring = '(cd ../zoekmuis && ./webquery)';
+$commandstring = "(cd ../zoekmuis && ./webquery --$type)";
 
 //Using backticks one way for PHP to call an external program and return the output
 $myoutput =`$commandstring`;
 
-echo '<p>(1) ';
-echo $myoutput.'<p>';
+echo $myoutput;
 ?>
 
-</font></body></html>
+</div></div></div>
+</body></html>
