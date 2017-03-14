@@ -1,3 +1,11 @@
+zoekmuis/titleindex/*
+zoekmuis/webindex/*
+zoekmuis/linkindex/*
+zoekmuis/pageindex/*
+zoekmuis/imageindex/*
+zoekmuis/repository/*
+zoekmuis/images/*
+
 # Object files
 *.o
 *.ko
