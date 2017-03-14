@@ -6,6 +6,8 @@ zoekmuis/imageindex/*
 zoekmuis/repository/*
 zoekmuis/images/*
 
+*.swp
+
 # Object files
 *.o
 *.ko
