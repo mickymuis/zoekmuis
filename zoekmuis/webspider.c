@@ -62,6 +62,7 @@ dataptr_grow( dataptr_t* d, size_t add ) {
 size_t
 make_absolute( char **buffer, const char* link, size_t length, const char* abs_url ) {
     int make_abs =0;
+    int add_slash =0;
     char *data =NULL;
     size_t entrylength =0, abs_len =0;
 
@@ -78,7 +79,7 @@ make_absolute( char **buffer, const char* link, size_t length, const char* abs_u
             abs_len =strlen( abs_url );
             for( int i =0; i < abs_len; i++ ) {
                 if( abs_url[i] == ':' ) {
-                    abs_len =i;
+                    abs_len =i+1;
                     break;
                 }
             }
@@ -87,7 +88,7 @@ make_absolute( char **buffer, const char* link, size_t length, const char* abs_u
             abs_len =strlen( abs_url );
             int past_scheme =0;
             for( int i =0; i < abs_len; i++ ) {
-                if( abs_url[i] == ':' ) {
+                if( abs_url[i] == '/' ) {
                     if( past_scheme ) {
                         abs_len =i;
                         break;
@@ -98,8 +99,11 @@ make_absolute( char **buffer, const char* link, size_t length, const char* abs_u
         } else {
             // Relative to current path
             abs_len= strlen( abs_url );
+            if( abs_url[abs_len-1] != '/' ) {
+                add_slash =1;
+            }
         }
-        entrylength +=abs_len;
+        entrylength +=abs_len + add_slash;
 
     }
     entrylength +=length;
@@ -108,9 +112,12 @@ make_absolute( char **buffer, const char* link, size_t length, const char* abs_u
     if( data == NULL )
         return 0;
 
-    if( make_abs )
+    if( make_abs ) {
         memcpy( data, abs_url, abs_len );
-    memcpy( data + abs_len, link, length );
+        if( add_slash )
+            data[abs_len] ='/';
+    }
+    memcpy( data + abs_len + add_slash, link, length );
 
     data[entrylength] =0; // Not neccesary, but handy for debugging
     *buffer =data;
