@@ -25,7 +25,7 @@ std::vector<string> load_list(const string& fname)
 {
     std::vector<string> ret;
     ifstream fobj(fname.c_str());
-    if (!fobj.good()) { cerr << "File " << fname << " not found!\n"; exit(-1); }
+    if (!fobj.good()) { cerr << "File `" << fname << "' not found!\n"; exit(-1); }
     string line;
     while (getline(fobj, line)) 
     {
@@ -39,7 +39,7 @@ int main(int argc, char * argv[] )
     //compute the HISTfeature of query image
     cv::Mat image_query = cv::imread( argv[1], 1 );
 
-    if( image_query.data == NULL ) cerr << "Cannot load " << argv[1] << endl;
+    if( image_query.data == NULL ) { cerr << "Cannot load `" << argv[1] << "' Wrong file type?" << endl; return -1; }
 
     cv::Mat query_hist;
     //convert to HSV

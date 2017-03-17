@@ -72,7 +72,7 @@ ranklist_push( ranklist_t* r, docid_t docid, index_t idx ) {
 
     // Make more room if neccesary
     if( r->count == r->size ) {
-        r->first =realloc( r->first, (r->size += RANKLIST_ARRAYSIZE_INCR) );
+        r->first =realloc( r->first, sizeof( rankelem_t) * (r->size += RANKLIST_ARRAYSIZE_INCR) );
         assert( r->first != NULL );
     }
     elem =r->first + r->count;

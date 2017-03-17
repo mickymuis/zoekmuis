@@ -31,6 +31,11 @@ Some of the components used in this project were made by others. First of all, I
 \item Color based image-matching
 \end{itemize}
 
+\subsection{Duplicate detection}
+
+As far as duplicate URL detection is concerned, I have improved only slightly over the previous implementation. The previous implementation used a queue with a balanced binary tree (AVL) in conjunction with Murmur2 hashing (see below). This has proven work reasonably decent performance-wise, but the approach sometimes struggles with URLs that are the same, but are formulated differently. There is written alot about the subject of URL normalization, some of which is quite complex to implement. I have included at least a basic form of URL-sanitation (\texttt{docid\_sanitizeUrl()} to make the duplicate detection more accurate. 
+\par The queue-with-avl implementation has kept the circular array as in the previous version as I decided against the use of a linked list. Both approaches have disadvantages (linked list used slightly more memory, wheres the circ. array relies on character-per-character comparisons). However, I believe the circular array to have superior locality over the linked list approach, though I have not tested this in any way. Perhaps more research can be done to find what datastructure would offer the greatest performance in this context (or just ask Google).
+
 \subsection{Discussion}
 
 Here I will discuss some of the limitations of the implementation and certain decisions I made that may be worthwhile mentioning. First of all, I have chosen to replace all URLs by DOCIDs instead. The Murmur2 hash used for DOCID is fast to generate and its 64 bit length prevents significant collisions, at least in this context. With this approach, the indices can be binary with fixed 8 byte fields, resulting in a significant reduction of memory footprint and lookup time. The downside is that reverse lookup (DOCID to URL) can be very expensive or needs a separate hashmap. Because of time constraints, I favoured an approach were I use the repository as reverse lookup. Instead of storing the complete HTML-page, every DOCID has an equally named file in \texttt{repository/} containing:

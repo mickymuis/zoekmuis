@@ -42,6 +42,7 @@ make_ranklist( ranklist_t *r, const char* keyword, mode_t mode ) {
                 break;
             ranklist_push( r, docid, (index_t)idx );
         }
+        fclose( file );
     }
 
     ranklist_sort( r );
@@ -57,6 +58,7 @@ make_imgcompare( const char* source ) {
 }
 
 int main( int argc, char** argv ) {
+    int err =0;
     char keyword[MAX_KWSIZE];
     FILE *file =fopen( "queryterms.txt", "r" );
     if( file == NULL ) return -1;
@@ -91,7 +93,7 @@ int main( int argc, char** argv ) {
             imgcompare_out =make_imgcompare( keyword );
             if( imgcompare_out == NULL ) {
                 fprintf( stderr, "imgcompare returned with errors\n" );
-                return -1;
+                err = -1;
             }
             FILE* file =index_open( IDX_REPOSITORY, keyword, IDX_OPEN_READ );
             if( file == NULL ) break;
@@ -112,7 +114,7 @@ int main( int argc, char** argv ) {
         char *docid_str =NULL;
         if( mode == MODE_COLOR ) {
             if( i == IMGCOMPARE_LIMIT ) break;
-            if( ferror( imgcompare_out) || feof( imgcompare_out ) ) break;
+            if( imgcompare_out == NULL || ferror( imgcompare_out) || feof( imgcompare_out ) ) break;
         
             docid_str =malloc( sizeof(char) * (DOCID_STRLEN+2) );
             fgets( docid_str, DOCID_STRLEN+1, imgcompare_out );
@@ -153,6 +155,9 @@ int main( int argc, char** argv ) {
     }
 
     ranklist_free( &r );
+    
+    if( !i )
+        printf( "<p>Your query returned no results</p>" );
     return 0;
 
 }

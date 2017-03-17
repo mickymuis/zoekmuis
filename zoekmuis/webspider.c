@@ -72,9 +72,33 @@ make_absolute( char **buffer, const char* link, size_t length, const char* abs_u
     // Check for relative links and add the prefix is neccesary
     if( strncmp( link, "http", 4 ) != 0 ) {
         make_abs =1;
-        abs_len= strlen( abs_url );
-        if( abs_url[abs_len-1] == '/' && link[0] == '/' )
-            abs_len--; // Avoid double '/'
+        // There are three types of relative URLs
+        if( link[0] == '/' && link[1] == '/' ) {
+            // Scheme-relative
+            abs_len =strlen( abs_url );
+            for( int i =0; i < abs_len; i++ ) {
+                if( abs_url[i] == ':' ) {
+                    abs_len =i;
+                    break;
+                }
+            }
+        } else if( link[0] == '/' ) {
+            // Relative to root directory
+            abs_len =strlen( abs_url );
+            int past_scheme =0;
+            for( int i =0; i < abs_len; i++ ) {
+                if( abs_url[i] == ':' ) {
+                    if( past_scheme ) {
+                        abs_len =i;
+                        break;
+                    }
+                    past_scheme =!past_scheme;
+                }
+            }
+        } else {
+            // Relative to current path
+            abs_len= strlen( abs_url );
+        }
         entrylength +=abs_len;
 
     }
