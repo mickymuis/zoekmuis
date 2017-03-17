@@ -86,14 +86,14 @@ make_absolute( char **buffer, const char* link, size_t length, const char* abs_u
         } else if( link[0] == '/' ) {
             // Relative to root directory
             abs_len =strlen( abs_url );
-            int past_scheme =0;
+            int count =0;
             for( int i =0; i < abs_len; i++ ) {
                 if( abs_url[i] == '/' ) {
-                    if( past_scheme ) {
+                    if( count > 1 ) {
                         abs_len =i;
                         break;
                     }
-                    past_scheme =!past_scheme;
+                    count++;
                 }
             }
         } else {
@@ -153,7 +153,8 @@ download_image( docid_t docid, const char* url ) {
 
 
     if( curl_res ) {
-            fprintf( stderr, "ERROR: while dowloading image: incorrect url or timeout.\n" ); 
+            fprintf( stderr, "ERROR: while dowloading image: incorrect url or timeout.\n" );
+            fprintf( stderr, "`%s'\n", url );
             err = -1;
     } else {
         char* buf;
